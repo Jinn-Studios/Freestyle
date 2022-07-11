@@ -68,26 +68,53 @@ namespace JinnDev.Freestyle.TicTacToe
 
         public static int ComputerGo(List<char?> tiles)
         {
-            int? offensivePlay = null;
-
             var copy = tiles.Select(x => x).ToList();
-            var nullTiles = copy.Select((x, y) => new { Index = y, Value = x }).Where(x => x.Value == null).ToList();
+            var nullTiles = copy.Select((x, y) => new { Index = y, Value = x }).Where(x => x.Value == null).Select(x => x.Index).ToList();
+
             foreach (var tile in nullTiles)
             {
-                if (offensivePlay == null) 
-                    offensivePlay = tile.Index;
-
-                copy[tile.Index] = PLAYER;
+                copy[tile] = COMPUTER;
                 if (WinConditionMet(copy))
-                    return tile.Index;
+                    return tile;
 
-                copy[tile.Index] = null;
+                copy[tile] = null;
             }
 
-            if (offensivePlay != null)
-                return offensivePlay.Value;
+            foreach (var tile in nullTiles)
+            {
+                copy[tile] = PLAYER;
+                if (WinConditionMet(copy))
+                    return tile;
 
-            throw new BoardException("Why did the Computer Go if there was nowhere to go?");
+                copy[tile] = null;
+            }
+
+            return ComputerOffensivePlay(copy);
+        }
+
+        public static int ComputerOffensivePlay(List<char?> tiles)
+        {
+            var nullIndexes = tiles.Select((x, y) => new { Index = y, Value = x }).Where(x => x.Value == null).Select(x => x.Index).ToList();
+
+            if (nullIndexes.Count == 0)
+                throw new BoardException("Why did the Computer Go if there was nowhere to go?");
+
+            if (nullIndexes.Count == 8)
+            {
+                var corners = new List<int> { 0, 2, 6, 8 };
+                if (corners.Any(x => tiles[x] == PLAYER))
+                    return 4;
+
+                if (tiles[4] == PLAYER)
+                    return 0;
+
+                if (tiles[1] == PLAYER || tiles[5] == PLAYER)
+                    return 6;
+
+                return 2;
+            }
+
+            return nullIndexes.First();
         }
     }
 }
