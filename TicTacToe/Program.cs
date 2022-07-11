@@ -4,15 +4,11 @@
     {
         static void Main()
         {
-            var board = new TicTacToeBoard();
-            var ticTacToeService = new TicTacToeService(board);
-            var result = ticTacToeService.RunGame();
-            TicTacToeService.WriteGrid(board);
-            if (result)
-                Console.WriteLine("YOU WON!!");
-            else
-                Console.WriteLine("YOU SUCK!!");
+            var repo = new TicTacToeRepo();
+            var ticTacToeService = new TicTacToeService(repo);
+            var boardUI = new TicTacToeUI(repo, ticTacToeService);
 
+            boardUI.RunUserInterface();
         }
     }
 }
